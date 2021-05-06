@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Web.PDFGen</id>
+    <version>1.0.0</version>
+    <title>Web.PDFGen</title>
+    <authors>Xiaoguo Ge</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/GeXiaoguo/Web.PDFGen</projectUrl>
+    <description>An ASP.NET Core app to convert html text into a PDF file</description>
+  </metadata>
+  <files>
+    <file src="bin\Debug\netcoreapp3.1\win-x86\publish\**\*.*" target="content" />
+  </files>
+</package>

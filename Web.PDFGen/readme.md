@@ -63,6 +63,7 @@ get from `http://localhost:5100/helloworld`
 post to application/json text to `http://localhost:5100/api/converttopdf`
 
 ## Allow posting plain html
+`test/html` is not support by default by ASP.Net Core prjoects. This means `[FromBody] string htmlText` would not work. Instead of adding plain text support to the project, we can also read the raw text from the `Request.Body`
 ```
  [HttpPost]
 [Route("api/HtmlToPDF")]
@@ -123,9 +124,15 @@ CopyStream(stream, fs);
 ```
 
 ## Publishing
-publish all files to a folder
-`dotnet publish the_csproj_file -pPublishProfile=the_folderprofile.pubxml`
+Publish the project as a selfcontained exe without dependency to .net runtime. First time trying to publish from Visual Studio will trigger creating of the publishing profile settings(`FolderProfile.pubxml`). Select `Self-Contained` deployment mode the published files fill contain the .net runtime.
+From the Web.PDFGen Asp.net project foler, run `dotnet publish -p:PublishProfile=Properties\PublishProfiles\FolderProfile.pubxml`
 
 ## Packaging
-Create a nuget pakcage out of files in the published folder
-`nuget.exe pack -Version 1.0.0 the_published_folder -OutputDirectory output_folder`
+Add the published folder to the nuspec file 
+```
+  <files>
+    <file src="bin\Debug\netcoreapp3.1\win-x86\publish\**\*.*" target="content" />
+  </files>
+```
+
+In the Web.PDFGen project folder, run `c:\tools\nuget.exe pack Web.PDFGen.nuspec`
