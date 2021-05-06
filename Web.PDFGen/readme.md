@@ -80,13 +80,11 @@ public async System.Threading.Tasks.Task<IActionResult> HtmlToPDF()
 html text can be posted to the api as text/html intead of applicaiton/json
 
 ## Failed to launch Chromium when debuging with Visual Studio
-Depending how the app is run the CurrentDirectory of the running process could be different.
-https://github.com/dotnet/project-system/issues/5053
-When running as a WebApp with VisualStudio the current directory is the project directory. When running as a console app with Visual Studio, the current directory is the bin folder.
+Depending how the app is run, the CurrentDirectory of the running process could be different according to https://github.com/dotnet/project-system/issues/5053
 
-This creates an interesting problem for self hosting application. It is both a WebApp and a Console app.
+The CurrentDirectory of the running process is set to the project directory when running as a WebApp with VisualStudio, and the bin folder when running as a console app. This creates an interesting problem for self hosted ASP.NET apps, because then are both WebApp and Console apps at the same time.
 
-The problem is with Visual Studio. Setting the current directory to the project directory is a shortcut to save the effort of copying the content files to the bin folder. But this breaks all the libraries that has it own content. Our PDFGen library is an example. It carries its own conent(Chromium)
+Visual Studio does this as shortcut for saving the effort of copying the content files to the bin folder. This breaks all the libraries that carry content. Our PDFGen library is an example. It carries Chromium as content.
 
 ## Consuming the API with HttpClient
 ```
