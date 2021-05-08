@@ -10,10 +10,6 @@ namespace Web.PDFGen
         {
             new HostBuilder()
                 .ConfigureHostConfiguration(configBuilder => configBuilder.AddCommandLine(args)) //environment(DEV, TEST, PROD) is to be passed from the command line
-                .ConfigureServices((hostContext, services) => // allow hosting windows services
-                {
-                    //services.AddHostedService<>();
-                })
                 .ConfigureAppConfiguration((hostContext, configBuilder) =>
                 {
                     configBuilder
@@ -27,6 +23,7 @@ namespace Web.PDFGen
                     .UseStartup<Startup>()
                     .UseUrls("http://localhost:5000");
                 })
+                .UseWindowsService()
                 .Build()
                 .Run();
         }

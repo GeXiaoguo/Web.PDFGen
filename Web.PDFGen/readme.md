@@ -24,11 +24,25 @@ Prefer `new HostBuilder()` instead of `Host.CreateDefaultBuilder` because it mak
 ```
 
 ## Configure the WidnowsService
+add reference to Windows Service host
 ```
-.ConfigureServices((hostContext, services) => // allow hosting windows services
-{
-    //services.AddHostedService<>();
-})
+<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.4" />
+```
+use the windowds serivce host
+```
+.UserWindowsService()
+```
+## Test the Window Service
+```
+sc create service_name binPath=full_path_to_exe
+sc delete service_name
+sc query  service_name
+sc start  service_name
+sc stop   service_name_
+```
+## Configure controllers and exception handling
+```
+services.AddControllers(optoins=>optoins.Filters.Add(typeof(UnhandledExceptionEventHandler)));
 ```
 
 ## Add an api end points
@@ -59,8 +73,10 @@ because:
 
 ## Test 
 Run the console app from command line `Web.PDFGen.exe`
-get from `http://localhost:5100/helloworld`
-post to application/json text to `http://localhost:5100/api/converttopdf`
+
+get from `http://localhost:5100/HeartBeat`
+
+post to application/json text to `http://localhost:5100/api/HtmlToPDF`
 
 ## Allow posting plain html
 `test/html` is not support by default by ASP.Net Core prjoects. This means `[FromBody] string htmlText` would not work. Instead of adding plain text support to the project, we can also read the raw text from the `Request.Body`
@@ -99,38 +115,20 @@ var htmlText = @"<!DOCTYPE html>
 var client = new HttpClient();
 var content = new StringContent(htmlText, System.Text.Encoding.UTF8, "text/html") ;
 var result = await client.PostAsync("http://localhost:5000/api/HtmlToPDF", content);
+var stream = await response.Content.ReadAsStreamAsync();
 ```
 
-## Get the stream from HttpResponse
-`var stream = await response.Content.ReadAsStreamAsync();`
+## Publish
+To make the exe run without dependency to .net core runtime, it needs to be published as a self contained exe. First time trying to publish from Visual Studio will trigger creating of the publishing profile settings(`FolderProfile.pubxml`). Select `Self-Contained` deployment mode the published files fill contain the .net runtime.
 
-## Write the stream to a file
-```
-public static void CopyStream(Stream input, Stream output)
-{
-    byte[] buffer = new byte[8 * 1024];
-    int len;
-    while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
-    {
-        output.Write(buffer, 0, len);
-    }
-}
-
-stream.Seek(0, SeekOrigin.Begin);
-CopyStream(stream, fs);
-
-```
-
-## Publishing
-Publish the project as a selfcontained exe without dependency to .net runtime. First time trying to publish from Visual Studio will trigger creating of the publishing profile settings(`FolderProfile.pubxml`). Select `Self-Contained` deployment mode the published files fill contain the .net runtime.
 From the Web.PDFGen Asp.net project foler, run `dotnet publish -p:PublishProfile=Properties\PublishProfiles\FolderProfile.pubxml`
 
 ## Packaging
-Add the published folder to the nuspec file 
+To allow nuget.exe to pack every thing in the published folder, add this nuspec file to project and copy it to the build target folder
 ```
   <files>
-    <file src="bin\Debug\netcoreapp3.1\win-x86\publish\**\*.*" target="content" />
+    <file src="**\*.*" target="content" />
   </files>
 ```
 
-In the Web.PDFGen project folder, run `c:\tools\nuget.exe pack Web.PDFGen.nuspec`
+In the Web.PDFGen project folder, run `c:\tools\nuget.exe pack  xxxPusblishFolder\Web.PDFGen.nuspec`

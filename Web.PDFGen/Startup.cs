@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Web.PDFGen
 {
+    public class UnhandledExceptoinHandler : IExceptionFilter
+    {
+        public void OnException(ExceptionContext context)
+        {
+            //logging.Error(context.Exception); 
+        }
+    }
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -25,7 +27,7 @@ namespace Web.PDFGen
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(optoins=>optoins.Filters.Add(typeof(UnhandledExceptionEventHandler)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
